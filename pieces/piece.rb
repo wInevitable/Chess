@@ -4,6 +4,11 @@ class Piece
     @board = board
     @position = position
     @color = color
+    @picture = @color == :white ? WHITE : BLACK
+  end
+  
+  def display
+    
   end
 
 end
