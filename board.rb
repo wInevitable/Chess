@@ -46,11 +46,6 @@ class Board
   
   def move!(start, end_pos)
     piece = self[*start]
-    if piece.nil? 
-      raise InvalidMoveError.new("Please choose a position with a piece.")
-    elsif piece.moves.none? { |move| move == end_pos }
-      raise InvalidMoveError.new("Invalid Move. Try Again.")
-    end
     self[start[0], start[1]], self[end_pos[0], end_pos[1]] = nil, piece
     piece.position = end_pos
   end
