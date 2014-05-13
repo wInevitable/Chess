@@ -19,7 +19,9 @@ class Board
   end
   
   def display
+    puts '   ' + ('a'..'h').to_a.join('  ')
     @board.each_index do |row|
+      print (8-row).to_s + ' '
       @board[row].each_with_index do |square, col|
         pos = (square.nil? ? ' ' : square.display).center(3)
         pos = pos.colorize(:background => :light_black) if (row + col).odd?
@@ -53,12 +55,16 @@ class Board
     piece.position = end_pos
   end
   
-  def move(start, end_pos)
+  def move(start, end_pos, color)
     piece = self[*start]
     if piece.nil? 
       raise InvalidMoveError.new("Please choose a position with a piece.")
     elsif piece.valid_moves.none? { |move| move == end_pos }
       raise InvalidMoveError.new("Invalid Move. Try Again.")
+    elsif piece.color != color
+      raise InvalidMoveError.new("That ain't yo piece yo")
+    else
+      p piece.color, color
     end
     self[start[0], start[1]], self[end_pos[0], end_pos[1]] = nil, piece
     piece.position = end_pos
