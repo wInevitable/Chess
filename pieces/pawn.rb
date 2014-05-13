@@ -3,7 +3,7 @@ class Pawn < Piece
   WHITE = "\u2659"
   BLACK = "\u265F"
   
-  def move
+  def moves
     moves = []
     row, col = position
     moves << [row + forward(1), col] unless @board[row + forward(1), col]

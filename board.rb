@@ -14,6 +14,10 @@ class Board
     @board[row][col]
   end
   
+  def []=(row, col, value)
+    @board[row][col] = value
+  end
+  
   def display
     @board.each_index do |row|
       @board[row].each_with_index do |square, col|
@@ -28,8 +32,58 @@ class Board
   end
   
   def in_check?(color)
-    #king pos of color
-    #valid moves
+    king = @board.flatten.select do |square|
+      square.is_a?(King) && square.color == color
+    end .first
+    
+    @board.flatten.any? do |piece|
+      next if piece.nil? || piece.color == color
+      piece.moves.include?(king.position)
+    end
+  end
+  
+  def move!(start, end_pos)
+    piece = self[*start]
+    if piece.nil? 
+      raise InvalidMoveError.new("Please choose a position with a piece.")
+    elsif piece.moves.none? { |move| move == end_pos }
+      raise InvalidMoveError.new("Invalid Move. Try Again.")
+    end
+    self[start[0], start[1]], self[end_pos[0], end_pos[1]] = nil, piece
+    piece.position = end_pos
+  end
+  
+  def move(start, end_pos)
+    piece = self[*start]
+    if piece.nil? 
+      raise InvalidMoveError.new("Please choose a position with a piece.")
+    elsif piece.valid_moves.none? { |move| move == end_pos }
+      raise InvalidMoveError.new("Invalid Move. Try Again.")
+    end
+    self[start[0], start[1]], self[end_pos[0], end_pos[1]] = nil, piece
+    piece.position = end_pos
+  end
+  
+  def dup
+    new_board = Array.new(8) { Array.new(8) }
+    pieces = @board.flatten.select { |square| square.is_a?(Piece) }
+    board_object = Board.new
+    
+    pieces.map! { |piece| piece.dup(board_object) }
+    pieces.each do |piece|
+      new_board[piece.row][piece.col] = piece
+    end
+    
+    board_object.board = new_board
+    board_object
+  end
+  
+  def checkmate?(color)
+    pieces(color).all? { |piece| piece.valid_moves.empty? }
+  end
+  
+  def pieces(color)
+    @board.flatten.compact.select { |square| square.color == color }
   end
   
   protected
@@ -48,5 +102,7 @@ class Board
                    Knight.new(self, [row, 6], color),
                    Rook.new(self, [row, 7], color)]
   end
+  
+  attr_accessor :board
         
 end
