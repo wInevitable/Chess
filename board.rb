@@ -27,6 +27,11 @@ class Board
     nil
   end
   
+  def in_check?(color)
+    #king pos of color
+    #valid moves
+  end
+  
   protected
   
   def set_pawns(row, color)

@@ -2,11 +2,15 @@ class SlidingPiece < Piece
   
   def moves
     moves = []
-    DIRECTIONS.each do |direction|
-      dir = direction.dup
-      while (position[0] + dir[0]).between?(0,7) && (position[1] + dir[1]).between?(0,7)
-        moves << [position[0] + dir[0], position[1] + dir[1]]
-        dir = [dir[0] + direction[0], dir[1] + direction[1]]
+    self.class::DIRECTIONS.each do |direction|
+      #dir = direction.dup
+      row, col = position[0] + direction[0], position[1] + direction[1]
+      while row.between?(0,7) && col.between?(0,7)
+        
+        break if @board[row, col] && @board[row, col].color == color
+        moves << [row, col]
+        row, col = row + direction[0], col + direction[1]
+        break if @board[row, col] # must be other color
       end
     end
     moves

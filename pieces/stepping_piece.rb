@@ -3,12 +3,15 @@ class SteppingPiece < Piece
   def moves
     moves = []
     
-    DIRECTION.each do |dir|
-      if (position[0] + dir[0]).between?(0,7) && (position[1] + dir[1]).between?(0,7)
-        moves << [position[0] + dir[0], position[1] + dir[1]]
+    self.class::DIRECTIONS.each do |direction|
+      row, col = position[0] + direction[0], position[1] + direction[1]
+      if row.between?(0,7) && col.between?(0,7)
+        moves << [row, col]
       end
     end
-    moves
+    moves.reject do |pos|
+      board[*pos] && board[*pos].color == color
+    end
   end
   
 end
