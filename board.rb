@@ -1,15 +1,30 @@
+require 'colorize'
+
 class Board
   
   def initialize
     @board = Array.new(8) { Array.new(8) }
-    @board.set_pawns(1, black)
-    @board.set_pieces(0, black)
-    @board.set_pawns(6, white)
-    @board.set_pieces(7, white)
+    set_pawns(1, :black)
+    set_pieces(0, :black)
+    set_pawns(6, :white)
+    set_pieces(7, :white)
   end
   
   def [](row, col)
     @board[row][col]
+  end
+  
+  def display
+    @board.each_index do |row|
+      @board[row].each_with_index do |square, col|
+        pos = (square.nil? ? ' ' : square.display).center(3)
+        pos = pos.colorize(:background => :light_black) if (row + col).odd?
+        print pos
+      end
+      puts
+    end
+    
+    nil
   end
   
   protected
@@ -27,19 +42,6 @@ class Board
                    Bishop.new(self, [row, 5], color),
                    Knight.new(self, [row, 6], color),
                    Rook.new(self, [row, 7], color)]
-  end
-  
-  def display
-    @board.each_index do |row|
-      @board[row].each_with_index do |square, col|
-        if square.nil?
-          print '_'
-        else
-          square.display
-        end
-      end
-      puts
-    end
   end
         
 end
