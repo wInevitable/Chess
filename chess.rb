@@ -1,8 +1,7 @@
-#encoding utf-8
+#encoding: utf-8
 
 require 'pry'
 
-require_relative 'board'
 require_relative 'pieces/piece'
 require_relative 'pieces/stepping_piece'
 require_relative 'pieces/sliding_piece'
@@ -13,6 +12,7 @@ require_relative 'pieces/queen'
 require_relative 'pieces/rook'
 require_relative 'pieces/knight'
 require_relative 'invalid_move_error'
+require_relative 'board'
 
 class Chess
   
@@ -28,6 +28,9 @@ class Chess
   def play
     until over?
       @board.display
+      if @board.in_check?(@current_player.color)
+        puts "#{@current_player.color.to_s.capitalize} is in check."
+      end
       begin
         start, end_pos = @current_player.play_turn
         @board.move(start, end_pos, @current_player.color)
@@ -36,7 +39,11 @@ class Chess
         retry
       end
       
-      @current_player = @white_player ? @black_player : @white_player
+      if @current_player == @white_player
+        @current_player = @black_player
+      else
+        @current_player = @white_player
+      end
     end
     @board.display
     puts "Game Over!"
@@ -66,22 +73,7 @@ class HumanPlayer
     get_move
   end
 end
-=begin
-b = Board.new
-b.move([1,0], [3,0])
-b.move([0,0], [2,0])
-b.move([2,0], [2,4])
-b.move([6,4], [4,4])
-b.move([1,3], [3,3])
-b.display
-puts
-c = Board.new
-c.move([6,5], [5,5])
-c.move([1,4], [3,4])
-c.move([6,6], [4,6])
-c.move([0,3], [4,7])
-c.display
-=end
+
 g = Chess.new(HumanPlayer.new, HumanPlayer.new)
 g.play
 pry

@@ -1,7 +1,9 @@
+#encoding: utf-8
+
 class Pawn < Piece
   
-  WHITE = "\u2659"
-  BLACK = "\u265F"
+  WHITE = "♙"
+  BLACK = "♟"
   
   def moves
     moves = []

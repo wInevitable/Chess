@@ -58,14 +58,13 @@ class Board
       raise InvalidMoveError.new("Invalid Move. Try Again.")
     elsif piece.color != color
       raise InvalidMoveError.new("That ain't yo piece yo")
-    else
-      p piece.color, color
     end
-    self[start[0], start[1]], self[end_pos[0], end_pos[1]] = nil, piece
-    piece.position = end_pos
+    move!(start, end_pos)
   end
   
   def dup
+    # new_board
+    # iterate through pieces, pieces.class.new(old_piece.position, new_board)
     new_board = Array.new(8) { Array.new(8) }
     pieces = @board.flatten.select { |square| square.is_a?(Piece) }
     board_object = Board.new
@@ -93,15 +92,19 @@ class Board
     @board[row] = Array.new(8) { |index| Pawn.new(self, [row, index], color)}
   end
   
+  ORDERED_PIECES = [Rook,
+                    Knight,
+                    Bishop,
+                    Queen,
+                    King,
+                    Bishop,
+                    Knight,
+                    Rook]
+  
   def set_pieces(row, color)
-    @board[row] = [Rook.new(self, [row, 0], color),
-                   Knight.new(self, [row, 1], color),
-                   Bishop.new(self, [row, 2], color),
-                   Queen.new(self, [row, 3], color),
-                   King.new(self, [row, 4], color),
-                   Bishop.new(self, [row, 5], color),
-                   Knight.new(self, [row, 6], color),
-                   Rook.new(self, [row, 7], color)]
+    ORDERED_PIECES.each_with_index do |piece_class, i|
+      piece_class.new(self, [row, i], color)
+    end
   end
   
   attr_accessor :board
