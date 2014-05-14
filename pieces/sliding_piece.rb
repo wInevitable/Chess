@@ -4,7 +4,7 @@ class SlidingPiece < Piece
     moves = []
     
     self.class::DIRECTIONS.each do |direction|
-      row, col = position[0] + direction[0], position[1] + direction[1]
+      row, col = self.row + direction[0], self.col + direction[1]
       
       while row.between?(0,7) && col.between?(0,7)
         break if @board.occupied?(row, col) == color

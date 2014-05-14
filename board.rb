@@ -66,9 +66,7 @@ class Board
   
   def dup
     board_object = Board.new
-    board_object.pieces.each do |piece|
-      board_object[*piece.position] = nil
-    end
+    board_object.pieces.each { |piece| board_object[*piece.position] = nil }
 
     pieces.each do |piece|
       piece.class.new(board_object, piece.position, piece.color)
@@ -81,24 +79,13 @@ class Board
     pieces(color).all? { |piece| piece.valid_moves.empty? }
   end
   
-  def pieces(color = nil)
-    if color
-      @board.flatten.compact.select { |square| square.color == color }
-    else
-      @board.flatten.compact
-    end
-  end
-  
   def occupied?(row, col)
     self[row, col] && self[row, col].color
   end
-    
   
   protected
   
-  def set_pawns(row, color)
-    @board[row] = Array.new(8) { |index| Pawn.new(self, [row, index], color)}
-  end
+  attr_accessor :board
   
   ORDERED_PIECES = [Rook,
                     Knight,
@@ -108,6 +95,16 @@ class Board
                     Bishop,
                     Knight,
                     Rook]
+
+  def pieces(color = nil)
+    if color
+      @board.flatten.compact.select { |square| square.color == color }
+    else
+      @board.flatten.compact
+    end
+  end 
+  
+  private
   
   def set_pieces(row, color)
     ORDERED_PIECES.each_with_index do |piece_class, i|
@@ -121,6 +118,8 @@ class Board
     end .first
   end
   
-  attr_accessor :board
-        
+  def set_pawns(row, color)
+    @board[row] = Array.new(8) { |index| Pawn.new(self, [row, index], color)}
+  end
+  
 end
