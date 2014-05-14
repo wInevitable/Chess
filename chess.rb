@@ -39,14 +39,18 @@ class Chess
         retry
       end
       
-      if @current_player == @white_player
-        @current_player = @black_player
-      else
-        @current_player = @white_player
-      end
+      switch_turn
     end
     @board.display
     puts "Game Over!"
+  end
+  
+  def switch_turn
+    if @current_player == @white_player
+      @current_player = @black_player
+    else
+      @current_player = @white_player
+    end
   end
   
   def over?
@@ -75,5 +79,10 @@ class HumanPlayer
 end
 
 g = Chess.new(HumanPlayer.new, HumanPlayer.new)
-g.play
+b = Board.new
+b.move([6,5],[5,5], :white)
+b.move([1,4],[3,4], :black)
+b.move([6,6],[4,6], :white)
+b.move([0,3],[4,7], :black)
+b.display
 pry
