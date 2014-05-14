@@ -7,28 +7,35 @@ class Pawn < Piece
   
   def moves
     moves = []
-    row, col = position
-    moves << [row + forward(1), col] unless @board[row + forward(1), col]
+    
+    unless @board[forward(1), col]
+      moves << [forward(1), col] 
 
-    unless @board[row + forward(1), col] || @board[row + forward(2), col]
-      moves << [row + forward(2), col] if row == (color == :white ? 6 : 1)
+      if !@board[forward(2), col] && starting_row?
+        moves << [forward(2), col]
+      end
     end
     
     diagonal_moves = diagonal(row, col).select do |pos|
-      @board[*pos] && @board[*pos].color != color
+      @board.occupied?(*pos) != color
     end
+    
     moves + diagonal_moves
+  end
+  
+  protected
+  def starting_row?
+    row == (color == :white ? 6 : 1)
   end
   
   private
   
   def forward(y)
-    color == :white ? y * -1 : y
+    row + (color == :white ? y * -1 : y)
   end
   
   def diagonal(row, col)
-    diags = []
-    diags << [row + forward(1), col + 1] << [row + forward(1), col - 1]
+    diags = [[forward(1), col + 1], [forward(1), col - 1]]
     diags.select { |pos| pos[0].between?(0,7) && pos[1].between?(0,7) }
   end  
 end

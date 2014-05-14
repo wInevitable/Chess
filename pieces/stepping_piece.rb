@@ -10,7 +10,7 @@ class SteppingPiece < Piece
       end
     end
     moves.reject do |pos|
-      @board[*pos] && @board[*pos].color == color
+      @board.occupied?(*pos) == color
     end
   end
   

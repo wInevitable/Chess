@@ -89,6 +89,11 @@ class Board
     end
   end
   
+  def occupied?(row, col)
+    self[row, col] && self[row, col].color
+  end
+    
+  
   protected
   
   def set_pawns(row, color)

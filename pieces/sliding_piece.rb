@@ -7,7 +7,7 @@ class SlidingPiece < Piece
       row, col = position[0] + direction[0], position[1] + direction[1]
       
       while row.between?(0,7) && col.between?(0,7)
-        break if @board[row, col] && @board[row, col].color == color
+        break if @board.occupied?(row, col) == color
         moves << [row, col]
 
         break if @board[row, col] # must be other color
