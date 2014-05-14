@@ -1,6 +1,7 @@
 #encoding: utf-8
 
 require 'pry'
+require 'yaml'
 
 require_relative 'pieces/piece'
 require_relative 'pieces/stepping_piece'
@@ -32,7 +33,7 @@ class Chess
         puts "#{@current_player.color.to_s.capitalize} is in check."
       end
       begin
-        start, end_pos = @current_player.play_turn
+        start, end_pos = @current_player.play_turn(self)
         @board.move(start, end_pos, @current_player.color)
       rescue IOError, InvalidMoveError => e
         puts e.message 
@@ -43,6 +44,16 @@ class Chess
     end
     @board.display
     puts "Game Over!"
+  end
+  
+  def save(filename)
+    File.open(filename, 'w') do |f|
+      f.puts to_yaml
+    end
+  end
+  
+  def self.load(filename)
+    YAML::load_file(filename)
   end
   
   private
@@ -60,24 +71,39 @@ class Chess
   end
 
   #remember to flip board
-  # board saving
 end
 
 class HumanPlayer
   
   attr_accessor :color
   
-  def play_turn
+  def play_turn(game)
     get_move = gets.chomp.split(",")
-    get_move.map! do |cor|
+    if get_move[0] == "save"
+      game.save(get_move[1])
+      return play_turn(game)
+      
+    elsif get_move[0] == "flipboard"
+      system("open http://i.imgur.com/wYkU5Yn.gif")
+      abort("GOD DAMNIT!")
+
+    else
+      parse_coords(get_move)
+    end
+
+  end
+  
+  private
+  
+  def parse_coords(coords)
+    coords.map do |cor|
       unless /[a-h][1-8]/ === cor
-        raise IOError.new("Enter Coordinates between A0-H8")
+        raise IOError.new("Enter Coordinates between A0-H8 or save,'filename'")
       end
       [8 - cor[1].to_i, ('a'..'h').to_a.index(cor[0])]
     end
-    
-    get_move
   end
+  
 end
 
 g = Chess.new(HumanPlayer.new, HumanPlayer.new)

@@ -2,12 +2,14 @@ require 'colorize'
 
 class Board
   
-  def initialize
+  def initialize(setup=true)
     @board = Array.new(8) { Array.new(8) }
-    set_pawns(1, :black)
-    set_pieces(0, :black)
-    set_pawns(6, :white)
-    set_pieces(7, :white)
+    if setup
+      set_pawns(1, :black)
+      set_pieces(0, :black)
+      set_pawns(6, :white)
+      set_pieces(7, :white)
+    end
   end
   
   def [](row, col)
@@ -36,10 +38,13 @@ class Board
   def in_check?(color)
     king = find_king(color)
     
-    @board.flatten.any? do |piece|
-      next if piece.nil? || piece.color == color
+    pieces(color_swap(color)).any? do |piece|
       piece.moves.include?(king.position)
     end
+  end
+  
+  def color_swap(color)
+    color == :white ? :black : :white
   end
   
   def move!(start, end_pos)
@@ -65,8 +70,7 @@ class Board
   end
   
   def dup
-    board_object = Board.new
-    board_object.pieces.each { |piece| board_object[*piece.position] = nil }
+    board_object = Board.new(false)
 
     pieces.each do |piece|
       piece.class.new(board_object, piece.position, piece.color)
