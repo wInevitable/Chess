@@ -63,18 +63,13 @@ class Board
   end
   
   def dup
-    # new_board
-    # iterate through pieces, pieces.class.new(old_piece.position, new_board)
-    new_board = Array.new(8) { Array.new(8) }
-    pieces = @board.flatten.select { |square| square.is_a?(Piece) }
     board_object = Board.new
-    
-    pieces.map! { |piece| piece.dup(board_object) }
-    pieces.each do |piece|
-      new_board[piece.row][piece.col] = piece
+    board_object.pieces.each do |piece|
+      board_object[*piece.position] = nil
     end
+
+    pieces.each { |piece| piece.class.new(board_object, piece.position, piece.color) }
     
-    board_object.board = new_board
     board_object
   end
   
@@ -82,8 +77,12 @@ class Board
     pieces(color).all? { |piece| piece.valid_moves.empty? }
   end
   
-  def pieces(color)
-    @board.flatten.compact.select { |square| square.color == color }
+  def pieces(color = nil)
+    if color
+      @board.flatten.compact.select { |square| square.color == color }
+    else
+      @board.flatten.compact
+    end
   end
   
   protected
