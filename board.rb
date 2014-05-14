@@ -34,9 +34,7 @@ class Board
   end
   
   def in_check?(color)
-    king = @board.flatten.select do |square|
-      square.is_a?(King) && square.color == color
-    end .first
+    king = find_king(color)
     
     @board.flatten.any? do |piece|
       next if piece.nil? || piece.color == color
@@ -104,6 +102,12 @@ class Board
     ORDERED_PIECES.each_with_index do |piece_class, i|
       piece_class.new(self, [row, i], color)
     end
+  end
+  
+  def find_king(color)
+    @board.flatten.select do |square|
+      square.is_a?(King) && square.color == color
+    end .first
   end
   
   attr_accessor :board
