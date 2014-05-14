@@ -17,24 +17,23 @@ require_relative 'board'
 
 class Chess
   
-  def initialize(player1, player2)
-    @white_player = player1
-    @white_player.color = :white
-    @black_player = player2
-    @black_player.color = :black
-    @current_player = @white_player
-    @board = Board.new
+  attr_reader :board, :current_player, :players
+  
+  def initialize
+    @board = Board.new  
+    @players = { :white => HumanPlayer.new(:white),
+      :black => HumanPlayer.new(:black) }
+    @current_player = :white
   end
   
   def play
     until over?
-      @board.display
-      if @board.in_check?(@current_player.color)
-        puts "#{@current_player.color.to_s.capitalize} is in check."
+      if board.in_check?(current_player)
+        puts "#{current_player.to_s.capitalize} is in check."
       end
       begin
-        start, end_pos = @current_player.play_turn(self)
-        @board.move(start, end_pos, @current_player.color)
+        start, end_pos = players[current_player].play_turn(self)
+        board.move(start, end_pos, current_player)
       rescue IOError, InvalidMoveError => e
         puts e.message 
         retry
@@ -42,8 +41,11 @@ class Chess
       
       switch_turn
     end
-    @board.display
-    puts "Game Over!"
+    
+    board.display
+    puts "#{:current_player} is checkmated."
+    
+    nil
   end
   
   def save(filename)
@@ -59,11 +61,7 @@ class Chess
   private
   
   def switch_turn
-    if @current_player == @white_player
-      @current_player = @black_player
-    else
-      @current_player = @white_player
-    end
+    @current_player = (current_player == :white) ? :black : :white
   end
   
   def over?
@@ -75,30 +73,47 @@ end
 
 class HumanPlayer
   
-  attr_accessor :color
+  attr_reader :color
+  
+  def initialize(color)
+    @color = color
+  end
   
   def play_turn(game)
-    get_move = gets.chomp.split(",")
-    if get_move[0] == "save"
-      game.save(get_move[1])
+    game.board.display
+    puts "Current player: #{color}"
+    
+    from_pos = get_pos('From pos:')
+    to_pos = get_pos('To pos:')
+    
+    #get_move = gets.chomp.split(",")
+    if from_pos == "save"
+      game.save(to_pos)
       return play_turn(game)
       
-    elsif get_move[0] == "flipboard"
+    elsif from_pos == "flipboard"
       system("open http://i.imgur.com/wYkU5Yn.gif")
-      abort("GOD DAMNIT!")
+      abort("!!!")
 
     else
-      parse_coords(get_move)
+      parse_coords(from_pos, to_pos)
     end
 
   end
   
   private
   
-  def parse_coords(coords)
+  def get_pos(prompt)
+    puts prompt
+    coords = gets.chomp
+  end
+  
+  def parse_coords(from, to)
+    coords = [from, to]
     coords.map do |cor|
       unless /[a-h][1-8]/ === cor
-        raise IOError.new("Enter Coordinates between A0-H8 or save,'filename'")
+        raise IOError.new("Enter Coordinates between A0-H8 OR
+        save and 'filename'")
       end
       [8 - cor[1].to_i, ('a'..'h').to_a.index(cor[0])]
     end
@@ -106,7 +121,7 @@ class HumanPlayer
   
 end
 
-g = Chess.new(HumanPlayer.new, HumanPlayer.new)
+g = Chess.new
 b = Board.new
 b.move([6,5],[5,5], :white)
 b.move([1,4],[3,4], :black)
