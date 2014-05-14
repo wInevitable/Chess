@@ -22,13 +22,15 @@ class Piece
     position[1]
   end
   
+  def valid_moves
+    moves.reject { |move| move_into_check?(move) }
+  end
+  
+  private
+  
   def move_into_check?(pos)
     example_board = @board.dup
     example_board.move!(position, pos)
     example_board.in_check?(color)
-  end
-  
-  def valid_moves
-    moves.reject { |move| move_into_check?(move) }
   end
 end

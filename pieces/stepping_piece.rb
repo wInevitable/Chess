@@ -13,5 +13,4 @@ class SteppingPiece < Piece
       @board.occupied?(*pos) == color
     end
   end
-  
 end

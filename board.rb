@@ -95,7 +95,7 @@ class Board
                     Bishop,
                     Knight,
                     Rook]
-
+                    
   def pieces(color = nil)
     if color
       @board.flatten.compact.select { |square| square.color == color }

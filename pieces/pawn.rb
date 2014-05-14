@@ -17,7 +17,7 @@ class Pawn < Piece
     end
     
     diagonal_moves = diagonal(row, col).select do |pos|
-      @board.occupied?(*pos) != color
+      @board.occupied?(*pos) && @board.occupied?(*pos) != color
     end
     
     moves + diagonal_moves

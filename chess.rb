@@ -45,6 +45,8 @@ class Chess
     puts "Game Over!"
   end
   
+  private
+  
   def switch_turn
     if @current_player == @white_player
       @current_player = @black_player
