@@ -50,13 +50,17 @@ class Board
   
   def move(start, end_pos, color)
     piece = self[*start]
+    
     if piece.nil? 
       raise InvalidMoveError.new("Please choose a position with a piece.")
+      
     elsif piece.valid_moves.none? { |move| move == end_pos }
       raise InvalidMoveError.new("Invalid Move. Try Again.")
+      
     elsif piece.color != color
       raise InvalidMoveError.new("That ain't yo piece yo")
     end
+    
     move!(start, end_pos)
   end
   
@@ -66,7 +70,9 @@ class Board
       board_object[*piece.position] = nil
     end
 
-    pieces.each { |piece| piece.class.new(board_object, piece.position, piece.color) }
+    pieces.each do |piece|
+      piece.class.new(board_object, piece.position, piece.color)
+    end
     
     board_object
   end

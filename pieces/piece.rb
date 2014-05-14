@@ -22,10 +22,6 @@ class Piece
     position[1]
   end
   
-  def dup(new_board = nil)
-    self.class.new(new_board, position.dup, color)
-  end
-  
   def move_into_check?(pos)
     example_board = @board.dup
     example_board.move!(position, pos)
